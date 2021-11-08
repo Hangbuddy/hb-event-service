@@ -73,6 +73,8 @@ namespace EventService
             {
                 endpoints.MapControllers();
             });
+            
+            PrepDb.PrepPopulation(app, env.IsProduction());
         }
     }
 }
