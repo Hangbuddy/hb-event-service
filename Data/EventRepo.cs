@@ -28,27 +28,21 @@ namespace EventService.Data
         public void CreateEvent(Event _event)
         {
             if (_event == null)
-            {
                 throw new ArgumentNullException(nameof(_event));
-            }
             _context.Events.Add(_event);
         }
 
         public void UpdateEvent(Event _event)
         {
             if (_event == null)
-            {
                 throw new ArgumentNullException(nameof(_event));
-            }
             _context.Events.Update(_event);
         }
 
         public void RegisterToEvent(EventUser eventUser)
         {
             if (eventUser == null)
-            {
                 throw new ArgumentNullException(nameof(eventUser));
-            }
             _context.EventUsers.Add(eventUser);
         }
 
@@ -60,5 +54,27 @@ namespace EventService.Data
             }
             _context.EventUsers.Remove(eventUser);
         }
+
+        public List<EventUser> GetWaitingList(int eventId)
+        {
+            return _context.EventUsers.Where(e => e.EventId == eventId && !e.Approved).ToList();
+        }
+
+        public List<EventUser> GetApprovedList(int eventId)
+        {
+            return _context.EventUsers.Where(e => e.EventId == eventId && e.Approved).ToList();
+        }
+
+        public void UpdateEventUser(EventUser eventUser)
+        {
+            if (eventUser == null)
+                throw new ArgumentNullException(nameof(eventUser));
+            // In case of rejection remove the request completely.
+            if (!eventUser.Approved)
+                DeRegisterFromEvent(eventUser);
+            else
+                _context.EventUsers.Update(eventUser);
+        }
+
     }
 }

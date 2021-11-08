@@ -11,9 +11,8 @@ namespace EventService.Data
         void UpdateEvent(Event _event);
         void RegisterToEvent(EventUser _event);
         void DeRegisterFromEvent(EventUser _event);
-
-        // TODO:
-        // List<EventUser> GetWaitingList(int eventId)
-        // List<EventUser> GetApprovedList(int eventId)
+        List<EventUser> GetWaitingList(int eventId);
+        List<EventUser> GetApprovedList(int eventId);
+        void UpdateEventUser(EventUser _event);
     }
 }

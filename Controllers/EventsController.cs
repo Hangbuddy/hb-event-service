@@ -24,7 +24,7 @@ namespace EventService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("get-event/{id}", Name = "GetEvent")]
+        [HttpGet("get-event", Name = "GetEvent")]
         public ActionResult<EventReadDto> GetEvent(int eventId)
         {
             var eventItem = _repository.GetEvent(eventId);
@@ -55,7 +55,6 @@ namespace EventService.Controllers
             _repository.SaveChanges();
             return CreatedAtRoute(nameof(GetEvent), new { id = eventUpdateDto.Id }, eventUpdateDto);
         }
-        
 
         [HttpPost("register-to-event")]
         public ActionResult<EventReadDto> RegisterToEvent(EventUserDto eventUserDto)
@@ -66,13 +65,42 @@ namespace EventService.Controllers
             return Ok();
         }
 
-        
-
         [HttpPost("deregister-from-event")]
         public ActionResult<EventReadDto> DeRegisterFromEvent(EventUserDto eventUserDto)
         {
             var eventUserModel = _mapper.Map<EventUser>(eventUserDto);
             _repository.DeRegisterFromEvent(eventUserModel);
+            _repository.SaveChanges();
+            return Ok();
+        }
+
+        [HttpGet("get-waiting-list", Name = "GetWaitingList")]
+        public ActionResult<List<EventUserReadDto>> GetWaitingList(int eventId)
+        {
+            var eventUsers = _repository.GetWaitingList(eventId);
+            if (eventUsers != null && eventUsers.Count > 0)
+            {
+                return Ok(_mapper.Map<List<EventUserReadDto>>(eventUsers));
+            }
+            return NotFound();
+        }
+
+        [HttpGet("get-approved-list", Name = "GetApprovedList")]
+        public ActionResult<List<EventUserReadDto>> GetApprovedList(int eventId)
+        {
+            var eventUsers = _repository.GetApprovedList(eventId);
+            if (eventUsers != null && eventUsers.Count > 0)
+            {
+                return Ok(_mapper.Map<List<EventUserReadDto>>(eventUsers));
+            }
+            return NotFound();
+        }
+
+        [HttpPost("update-event-user")]
+        public ActionResult<EventReadDto> UpdateEventUser(EventUserUpdateDto eventUserUpdateDto)
+        {
+            var eventUserModel = _mapper.Map<EventUser>(eventUserUpdateDto);
+            _repository.UpdateEventUser(eventUserModel);
             _repository.SaveChanges();
             return Ok();
         }

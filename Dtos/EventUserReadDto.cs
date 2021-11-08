@@ -4,11 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EventService.Dtos
 {
-    public class EventUserDto
+    public class EventUserReadDto
     {
-        [Required]
-        public int EventId { get; set; }
-        [Required]
         public int UserId { get; set; }
     }
 }

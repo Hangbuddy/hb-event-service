@@ -46,14 +46,12 @@ namespace EventService
 
             services.AddScoped<IEventRepo, EventRepo>();
 
-            services.AddGrpc();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventService", Version = "v1" });
             });
-            Console.WriteLine($"--> CommandService Endpoint {Configuration["CommandService"]}");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
