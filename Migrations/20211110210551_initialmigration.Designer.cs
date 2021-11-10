@@ -6,11 +6,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 namespace EventService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211108194302_initialmigration")]
+    [Migration("20211110210551_initialmigration")]
     partial class initialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,17 +38,14 @@ namespace EventService.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<Point>("Location")
+                        .HasColumnType("geography");
+
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
                     b.Property<bool>("PermissionRequired")
                         .HasColumnType("bit");
-
-                    b.Property<double>("PosX")
-                        .HasColumnType("float");
-
-                    b.Property<double>("PosY")
-                        .HasColumnType("float");
 
                     b.Property<string>("Title")
                         .IsRequired()

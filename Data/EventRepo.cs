@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EventService.Models;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
 
 namespace EventService.Data
 {
@@ -74,6 +76,12 @@ namespace EventService.Data
             else
                 _context.EventUsers.Update(eventUser);
         }
+        public List<Event> GetNearbyEvents(double lattidute, double longtidute, double range)
+        {
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var location = geometryFactory.CreatePoint(new Coordinate(longtidute, lattidute));
 
+            return _context.Events.Where(e => e.Location.Distance(location) < range).ToList();
+        }
     }
 }

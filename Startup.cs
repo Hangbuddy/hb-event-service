@@ -27,7 +27,7 @@ namespace EventService
             {
                 Console.WriteLine("--> Using SqlServer Db");
                 services.AddDbContext<AppDbContext>(opt =>
-                    opt.UseSqlServer(Configuration.GetConnectionString("EventsConn")));
+                    opt.UseSqlServer(Configuration.GetConnectionString("EventsConn"), opt => opt.UseNetTopologySuite()));
             }
             else
             {

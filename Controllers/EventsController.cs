@@ -102,5 +102,16 @@ namespace EventService.Controllers
             _repository.SaveChanges();
             return Ok();
         }
+
+        [HttpGet("get-nearby-events", Name = "GetNearbyEvents")]
+        public ActionResult<List<EventReadDto>> GetNearbyEvents(double lattidute, double longtidute, double range)
+        {
+            var events = _repository.GetNearbyEvents(lattidute, longtidute, range);
+            if (events != null && events.Count > 0)
+            {
+                return Ok(_mapper.Map<List<EventReadDto>>(events));
+            }
+            return NotFound();
+        }
     }
 }

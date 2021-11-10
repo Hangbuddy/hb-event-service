@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 namespace EventService.Migrations
 {
@@ -35,17 +36,14 @@ namespace EventService.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<Point>("Location")
+                        .HasColumnType("geography");
+
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
                     b.Property<bool>("PermissionRequired")
                         .HasColumnType("bit");
-
-                    b.Property<double>("PosX")
-                        .HasColumnType("float");
-
-                    b.Property<double>("PosY")
-                        .HasColumnType("float");
 
                     b.Property<string>("Title")
                         .IsRequired()

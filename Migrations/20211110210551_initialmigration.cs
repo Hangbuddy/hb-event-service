@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 
 namespace EventService.Migrations
 {
@@ -18,8 +19,7 @@ namespace EventService.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PermissionRequired = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    PosX = table.Column<double>(type: "float", nullable: false),
-                    PosY = table.Column<double>(type: "float", nullable: false),
+                    Location = table.Column<Point>(type: "geography", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },

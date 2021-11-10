@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using NetTopologySuite.Geometries;
 
 namespace EventService.Dtos
 {
@@ -12,8 +13,8 @@ namespace EventService.Dtos
         public string Description { get; set; }
         public bool PermissionRequired { get; set; }
         public bool IsActive { get; set; }
-        public double PosX { get; set; }
-        public double PosY { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
     }
 }

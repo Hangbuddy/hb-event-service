@@ -14,5 +14,6 @@ namespace EventService.Data
         List<EventUser> GetWaitingList(int eventId);
         List<EventUser> GetApprovedList(int eventId);
         void UpdateEventUser(EventUser _event);
+        List<Event> GetNearbyEvents(double lattidute, double longtidute, double range);
     }
 }
