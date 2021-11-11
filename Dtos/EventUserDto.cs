@@ -7,6 +7,6 @@ namespace EventService.Dtos
         [Required]
         public int EventId { get; set; }
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using EventService.Data;
 using EventService.Dtos;
 using EventService.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace EventService.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     public class EventsController : ControllerBase
     {
@@ -36,6 +39,9 @@ namespace EventService.Controllers
         [HttpPost("create-event")]
         public ActionResult<EventReadDto> CreateEvent(EventCreateDto eventCreateDto)
         {
+            var userId = User.FindFirst("Id")?.Value;
+            if (userId != eventCreateDto.OwnerId)
+                return Unauthorized();
             var eventModel = _mapper.Map<Event>(eventCreateDto);
             _repository.CreateEvent(eventModel);
             _repository.SaveChanges();
@@ -48,6 +54,9 @@ namespace EventService.Controllers
         [HttpPost("update-event")]
         public ActionResult<EventReadDto> UpdateEvent(EventUpdateDto eventUpdateDto)
         {
+            var userId = User.FindFirst("Id")?.Value;
+            if (userId != eventUpdateDto.OwnerId)
+                return Unauthorized();
             var eventModel = _mapper.Map<Event>(eventUpdateDto);
             _repository.UpdateEvent(eventModel);
             _repository.SaveChanges();
@@ -57,6 +66,9 @@ namespace EventService.Controllers
         [HttpPost("register-to-event")]
         public ActionResult<EventReadDto> RegisterToEvent(EventUserDto eventUserDto)
         {
+            var userId = User.FindFirst("Id")?.Value;
+            if (userId != eventUserDto.UserId)
+                return Unauthorized();
             var eventUserModel = _mapper.Map<EventUser>(eventUserDto);
             _repository.RegisterToEvent(eventUserModel);
             _repository.SaveChanges();
@@ -66,6 +78,9 @@ namespace EventService.Controllers
         [HttpPost("deregister-from-event")]
         public ActionResult<EventReadDto> DeRegisterFromEvent(EventUserDto eventUserDto)
         {
+            var userId = User.FindFirst("Id")?.Value;
+            if (userId != eventUserDto.UserId)
+                return Unauthorized();
             var eventUserModel = _mapper.Map<EventUser>(eventUserDto);
             _repository.DeRegisterFromEvent(eventUserModel);
             _repository.SaveChanges();

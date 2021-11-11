@@ -11,15 +11,15 @@ using NetTopologySuite.Geometries;
 namespace EventService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211110210551_initialmigration")]
-    partial class initialmigration
+    [Migration("20211111204347_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.8")
+                .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("EventService.Models.Event", b =>
@@ -41,8 +41,9 @@ namespace EventService.Migrations
                     b.Property<Point>("Location")
                         .HasColumnType("geography");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PermissionRequired")
                         .HasColumnType("bit");
@@ -64,8 +65,8 @@ namespace EventService.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("Approved")
                         .HasColumnType("bit");

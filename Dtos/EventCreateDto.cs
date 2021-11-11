@@ -5,7 +5,7 @@ namespace EventService.Dtos
     public class EventCreateDto
     {
         [Required]
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
         [Required]
         public string Title { get; set; }
         public string Description { get; set; }

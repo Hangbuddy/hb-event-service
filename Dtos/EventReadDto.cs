@@ -6,7 +6,7 @@ namespace EventService.Dtos
     public class EventReadDto
     {
         public int Id { get; set; }
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public bool PermissionRequired { get; set; }
