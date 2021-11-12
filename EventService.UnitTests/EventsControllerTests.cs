@@ -246,7 +246,7 @@ namespace EventService.UnitTests
             var result = controller.RegisterToEvent(_eventUserDto);
 
             // Assert
-            result.Result.Should().BeOfType<UnauthorizedResult>();
+            result.Should().BeOfType<UnauthorizedResult>();
         }
 
         [Fact]
@@ -265,7 +265,7 @@ namespace EventService.UnitTests
             var actionResult = controller.RegisterToEvent(_eventUserDto);
 
             // Assert
-            actionResult.Result.Should().BeOfType<OkResult>();
+            actionResult.Should().BeOfType<OkResult>();
 
         }
 
@@ -285,7 +285,7 @@ namespace EventService.UnitTests
             var result = controller.DeRegisterFromEvent(_eventUserDto);
 
             // Assert
-            result.Result.Should().BeOfType<UnauthorizedResult>();
+            result.Should().BeOfType<UnauthorizedResult>();
         }
 
         [Fact]
@@ -304,7 +304,7 @@ namespace EventService.UnitTests
             var actionResult = controller.DeRegisterFromEvent(_eventUserDto);
 
             // Assert
-            actionResult.Result.Should().BeOfType<OkResult>();
+            actionResult.Should().BeOfType<OkResult>();
         }
 
         [Fact]
@@ -371,11 +371,10 @@ namespace EventService.UnitTests
             };
 
             // Act
-            var actionResult = controller.UpdateEventUser(_eventUserUpdateDto);
+            var result = controller.UpdateEventUser(_eventUserUpdateDto);
 
             // Assert
-            var result = actionResult.Result as ObjectResult;
-            actionResult.Result.Should().BeOfType<OkResult>();
+            result.Should().BeOfType<OkResult>();
         }
 
         [Fact]
