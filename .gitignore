@@ -2,3 +2,5 @@
 /obj/
 /EventService.Api/obj/
 /EventService.Api/bin/
+/EventService.Tests/obj/
+/EventService.Tests/bin/
