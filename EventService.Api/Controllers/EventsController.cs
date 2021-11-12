@@ -64,7 +64,7 @@ namespace EventService.Controllers
         }
 
         [HttpPost("register-to-event")]
-        public ActionResult<EventReadDto> RegisterToEvent(EventUserDto eventUserDto)
+        public ActionResult RegisterToEvent(EventUserDto eventUserDto)
         {
             var userId = User.FindFirst("Id")?.Value;
             if (userId != eventUserDto.UserId)
@@ -76,7 +76,7 @@ namespace EventService.Controllers
         }
 
         [HttpPost("deregister-from-event")]
-        public ActionResult<EventReadDto> DeRegisterFromEvent(EventUserDto eventUserDto)
+        public ActionResult DeRegisterFromEvent(EventUserDto eventUserDto)
         {
             var userId = User.FindFirst("Id")?.Value;
             if (userId != eventUserDto.UserId)
@@ -110,7 +110,7 @@ namespace EventService.Controllers
         }
 
         [HttpPost("update-event-user")]
-        public ActionResult<EventReadDto> UpdateEventUser(EventUserUpdateDto eventUserUpdateDto)
+        public ActionResult UpdateEventUser(EventUserUpdateDto eventUserUpdateDto)
         {
             var eventUserModel = _mapper.Map<EventUser>(eventUserUpdateDto);
             _repository.UpdateEventUser(eventUserModel);

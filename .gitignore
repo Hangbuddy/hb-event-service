@@ -1,0 +1,6 @@
+/bin/
+/obj/
+/EventService.Api/obj/
+/EventService.Api/bin/
+/EventService.UnitTests/obj/
+/EventService.UnitTests/bin/
