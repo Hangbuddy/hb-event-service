@@ -1,0 +1,48 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\git\\hangbuddy\\hb-event-service\\build.proj": {}
+  },
+  "projects": {
+    "C:\\git\\hangbuddy\\hb-event-service\\build.proj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\git\\hangbuddy\\hb-event-service\\build.proj",
+        "projectName": "build",
+        "projectPath": "C:\\git\\hangbuddy\\hb-event-service\\build.proj",
+        "packagesPath": "C:\\Users\\sahin\\.nuget\\packages\\",
+        "outputPath": "C:\\git\\hangbuddy\\hb-event-service\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\sahin\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net45"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net45": {
+            "targetAlias": "net45",
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net45": {
+          "targetAlias": "net45",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0, )",
+              "autoReferenced": true
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.402\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
