@@ -10,12 +10,10 @@ namespace EventService.Data
     public class EventRepo : IEventRepo
     {
         private readonly AppDbContext _context;
-
         public EventRepo(AppDbContext context)
         {
             _context = context;
         }
-
         public bool SaveChanges()
         {
             return (_context.SaveChanges() >= 0);
