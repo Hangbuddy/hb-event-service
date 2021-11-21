@@ -231,25 +231,6 @@ namespace EventService.UnitTests
         }
 
         [Fact]
-        public void RegisterToEvent_WithAnotherUser_ReturnsUnauthorized()
-        {
-            // Arrange
-            repositoryStub.Setup(repo => repo.RegisterToEvent(It.IsAny<EventUser>()))
-            .Verifiable();
-            var controller = new EventsController(repositoryStub.Object, _mapper)
-            {
-                ControllerContext = new ControllerContext()
-            };
-            controller.ControllerContext.HttpContext = new DefaultHttpContext { User = anotherUser };
-
-            // Act
-            var result = controller.RegisterToEvent(_eventUserDto);
-
-            // Assert
-            result.Should().BeOfType<UnauthorizedResult>();
-        }
-
-        [Fact]
         public void RegisterToEvent_WithCurrentUser_ReturnsEvent()
         {
             // Arrange
@@ -262,30 +243,11 @@ namespace EventService.UnitTests
             controller.ControllerContext.HttpContext = new DefaultHttpContext { User = currentUser };
 
             // Act
-            var actionResult = controller.RegisterToEvent(_eventUserDto);
+            var actionResult = controller.RegisterToEvent(1);
 
             // Assert
             actionResult.Should().BeOfType<OkResult>();
 
-        }
-
-        [Fact]
-        public void DeRegisterFromEvent_WithAnotherUser_ReturnsUnauthorized()
-        {
-            // Arrange
-            repositoryStub.Setup(repo => repo.DeRegisterFromEvent(It.IsAny<EventUser>()))
-            .Verifiable();
-            var controller = new EventsController(repositoryStub.Object, _mapper)
-            {
-                ControllerContext = new ControllerContext()
-            };
-            controller.ControllerContext.HttpContext = new DefaultHttpContext { User = anotherUser };
-
-            // Act
-            var result = controller.DeRegisterFromEvent(_eventUserDto);
-
-            // Assert
-            result.Should().BeOfType<UnauthorizedResult>();
         }
 
         [Fact]
@@ -301,7 +263,7 @@ namespace EventService.UnitTests
             controller.ControllerContext.HttpContext = new DefaultHttpContext { User = currentUser };
 
             // Act
-            var actionResult = controller.DeRegisterFromEvent(_eventUserDto);
+            var actionResult = controller.DeRegisterFromEvent(1);
 
             // Assert
             actionResult.Should().BeOfType<OkResult>();

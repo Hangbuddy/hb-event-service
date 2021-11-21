@@ -25,7 +25,7 @@ namespace EventService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("get-event", Name = "GetEvent")]
+        [HttpGet("{userId}", Name = "GetEvent")]
         public ActionResult<EventReadDto> GetEvent(int eventId)
         {
             var eventItem = _repository.GetEvent(eventId);
@@ -36,7 +36,7 @@ namespace EventService.Controllers
             return NotFound();
         }
 
-        [HttpPost("create-event")]
+        [HttpPost]
         public ActionResult<EventReadDto> CreateEvent(EventCreateDto eventCreateDto)
         {
             var userId = User.FindFirst("Id")?.Value;
@@ -51,7 +51,7 @@ namespace EventService.Controllers
             return CreatedAtRoute(nameof(GetEvent), new { id = eventReadDto.Id }, eventReadDto);
         }
 
-        [HttpPost("update-event")]
+        [HttpPut]
         public ActionResult<EventReadDto> UpdateEvent(EventUpdateDto eventUpdateDto)
         {
             var userId = User.FindFirst("Id")?.Value;
@@ -63,31 +63,29 @@ namespace EventService.Controllers
             return CreatedAtRoute(nameof(GetEvent), new { id = eventUpdateDto.Id }, eventUpdateDto);
         }
 
-        [HttpPost("register-to-event")]
-        public ActionResult RegisterToEvent(EventUserDto eventUserDto)
+        [HttpPost("{eventId}/register")]
+        public ActionResult RegisterToEvent(int eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
-            if (userId != eventUserDto.UserId)
-                return Unauthorized();
+            var eventUserDto = new EventUserDto() { EventId = eventId, UserId = userId };
             var eventUserModel = _mapper.Map<EventUser>(eventUserDto);
             _repository.RegisterToEvent(eventUserModel);
             _repository.SaveChanges();
             return Ok();
         }
 
-        [HttpPost("deregister-from-event")]
-        public ActionResult DeRegisterFromEvent(EventUserDto eventUserDto)
+        [HttpPost("{eventId}/deregister")]
+        public ActionResult DeRegisterFromEvent(int eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
-            if (userId != eventUserDto.UserId)
-                return Unauthorized();
+            var eventUserDto = new EventUserDto() { EventId = eventId, UserId = userId };
             var eventUserModel = _mapper.Map<EventUser>(eventUserDto);
             _repository.DeRegisterFromEvent(eventUserModel);
             _repository.SaveChanges();
             return Ok();
         }
 
-        [HttpGet("get-waiting-list", Name = "GetWaitingList")]
+        [HttpGet("{eventId}/waiting-list", Name = "GetWaitingList")]
         public ActionResult<List<EventUserReadDto>> GetWaitingList(int eventId)
         {
             var eventUsers = _repository.GetWaitingList(eventId);
@@ -98,7 +96,7 @@ namespace EventService.Controllers
             return NotFound();
         }
 
-        [HttpGet("get-approved-list", Name = "GetApprovedList")]
+        [HttpGet("{eventId}/approved-list", Name = "GetApprovedList")]
         public ActionResult<List<EventUserReadDto>> GetApprovedList(int eventId)
         {
             var eventUsers = _repository.GetApprovedList(eventId);
@@ -118,7 +116,7 @@ namespace EventService.Controllers
             return Ok();
         }
 
-        [HttpGet("get-nearby-events", Name = "GetNearbyEvents")]
+        [HttpGet("nearby-events", Name = "GetNearbyEvents")]
         public ActionResult<List<EventReadDto>> GetNearbyEvents(double lattidute, double longtidute, double range)
         {
             var events = _repository.GetNearbyEvents(lattidute, longtidute, range);
