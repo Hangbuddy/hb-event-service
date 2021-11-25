@@ -11,7 +11,7 @@ using NetTopologySuite.Geometries;
 namespace EventService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211111204347_InitialMigration")]
+    [Migration("20211125134742_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,10 +24,9 @@ namespace EventService.Migrations
 
             modelBuilder.Entity("EventService.Models.Event", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -62,8 +61,8 @@ namespace EventService.Migrations
 
             modelBuilder.Entity("EventService.Models.EventUser", b =>
                 {
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
+                    b.Property<string>("EventId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
