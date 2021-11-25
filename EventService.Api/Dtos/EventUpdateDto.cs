@@ -7,7 +7,7 @@ namespace EventService.Dtos
     {
         [Key]
         [Required]
-        public int Id { get; set; }
+        public string Id { get; set; }
         [Required]
         public string OwnerId { get; set; }
         public string Title { get; set; }

@@ -21,7 +21,7 @@ namespace EventService.UnitTests
     public class EventsControllerTests
     {
         private readonly Mock<IEventRepo> repositoryStub = new();
-        private static readonly Random _random = new();
+        private static readonly Guid eventId = Guid.NewGuid();
         private static readonly EventsProfile eventsProfile = new();
         private static readonly MapperConfiguration configuration = new(cfg => cfg.AddProfile(eventsProfile));
         private readonly IMapper _mapper = new Mapper(configuration);
@@ -30,7 +30,7 @@ namespace EventService.UnitTests
         private readonly ClaimsPrincipal anotherUser = new(new ClaimsIdentity(new Claim[] { new Claim("Id", "UnauthorizedUserId") }));
         private readonly Event _event = new()
         {
-            Id = 1,
+            Id = eventId,
             OwnerId = "OwnerId",
             Title = "Title",
             Description = "Description",
@@ -42,7 +42,7 @@ namespace EventService.UnitTests
         };
         private readonly Event _updatedEvent = new()
         {
-            Id = 1,
+            Id = eventId,
             OwnerId = "OwnerId",
             Title = "UpdatedTitle",
             Description = "UpdatedDescription",
@@ -63,7 +63,7 @@ namespace EventService.UnitTests
         };
         private readonly EventUpdateDto _eventUpdateDto = new()
         {
-            Id = 1,
+            Id = eventId.ToString(),
             OwnerId = "OwnerId",
             Title = "UpdatedTitle",
             Description = "UpdatedDescription",
@@ -72,11 +72,6 @@ namespace EventService.UnitTests
             Latitude = 10,
             Longitude = 15
         };
-        private readonly EventUserDto _eventUserDto = new()
-        {
-            EventId = 1,
-            UserId = "OwnerId"
-        };
         private readonly List<EventUserReadDto> _eventUserReadDtoList = new()
         {
             new EventUserReadDto() { UserId = "User1" },
@@ -84,27 +79,27 @@ namespace EventService.UnitTests
         };
         private readonly EventUserUpdateDto _eventUserUpdateDto = new()
         {
-            EventId = 1,
+            EventId = eventId.ToString(),
             UserId = "User1",
             Approved = true
         };
 
         private readonly List<EventReadDto> _eventReadDtoList = new()
         {
-            new EventReadDto() { Id = 1, OwnerId = "OwnerId", Title = "Title", Description = "Description", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
-            new EventReadDto() { Id = 1, OwnerId = "OwnerId", Title = "UpdatedTitle", Description = "UpdatedDescription", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
+            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "Title", Description = "Description", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
+            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "UpdatedTitle", Description = "UpdatedDescription", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
         };
 
         [Fact]
         public void GetEvent_WithUnexistingEvent_ReturnsNotFound()
         {
             // Arrange
-            repositoryStub.Setup(repo => repo.GetEvent(It.IsAny<int>()))
+            repositoryStub.Setup(repo => repo.GetEvent(It.IsAny<string>()))
             .Returns((Event)null);
             var controller = new EventsController(repositoryStub.Object, _mapper);
 
             // Act
-            var result = controller.GetEvent(_random.Next(1000));
+            var result = controller.GetEvent(eventId.ToString());
 
             // Assert
             result.Result.Should().BeOfType<NotFoundResult>();
@@ -114,12 +109,12 @@ namespace EventService.UnitTests
         public void GetEvent_WithExistingEvent_ReturnsExpectedEvent()
         {
             // Arrange
-            repositoryStub.Setup(repo => repo.GetEvent(It.IsAny<int>()))
+            repositoryStub.Setup(repo => repo.GetEvent(It.IsAny<string>()))
             .Returns(_event);
             var controller = new EventsController(repositoryStub.Object, _mapper);
 
             // Act
-            var actionResult = controller.GetEvent(_random.Next(1000));
+            var actionResult = controller.GetEvent(eventId.ToString());
 
             // Assert
             var result = actionResult.Result as OkObjectResult;
@@ -127,10 +122,12 @@ namespace EventService.UnitTests
 
             result.Value.Should().BeEquivalentTo(
                 _event,
-                opt => opt.Excluding(su => su.Location));
+                opt => opt.Excluding(su => su.Location)
+                          .Excluding(su => su.Id));
 
             var point = geometryFactory.CreatePoint(new Coordinate(((EventReadDto)result.Value).Longitude, ((EventReadDto)result.Value).Latitude));
             Assert.Equal(_event.Location, point);
+            Assert.Equal(_event.Id.ToString(), ((EventReadDto)result.Value).Id);
         }
 
         [Fact]
@@ -243,7 +240,7 @@ namespace EventService.UnitTests
             controller.ControllerContext.HttpContext = new DefaultHttpContext { User = currentUser };
 
             // Act
-            var actionResult = controller.RegisterToEvent(1);
+            var actionResult = controller.RegisterToEvent(eventId.ToString());
 
             // Assert
             actionResult.Should().BeOfType<OkResult>();
@@ -263,7 +260,7 @@ namespace EventService.UnitTests
             controller.ControllerContext.HttpContext = new DefaultHttpContext { User = currentUser };
 
             // Act
-            var actionResult = controller.DeRegisterFromEvent(1);
+            var actionResult = controller.DeRegisterFromEvent(eventId.ToString());
 
             // Assert
             actionResult.Should().BeOfType<OkResult>();
@@ -273,10 +270,10 @@ namespace EventService.UnitTests
         public void GetWaitingList_WithCurrentUser_ReturnsEventList()
         {
             // Arrange
-            repositoryStub.Setup(repo => repo.GetWaitingList(It.IsAny<int>()))
+            repositoryStub.Setup(repo => repo.GetWaitingList(It.IsAny<string>()))
             .Returns(new List<EventUser> {
-                        new EventUser() { EventId = 1, UserId = "User1" },
-                        new EventUser() { EventId = 1, UserId = "User2" }
+                        new EventUser() { EventId = eventId.ToString(), UserId = "User1" },
+                        new EventUser() { EventId = eventId.ToString(), UserId = "User2" }
                         });
             var controller = new EventsController(repositoryStub.Object, _mapper)
             {
@@ -285,7 +282,7 @@ namespace EventService.UnitTests
             controller.ControllerContext.HttpContext = new DefaultHttpContext { User = currentUser };
 
             // Act
-            var actionResult = controller.GetWaitingList(1);
+            var actionResult = controller.GetWaitingList(eventId.ToString());
 
             // Assert
             var result = actionResult.Result as OkObjectResult;
@@ -297,10 +294,10 @@ namespace EventService.UnitTests
         public void GetApprovedList_WithCurrentUser_ReturnsEventList()
         {
             // Arrange
-            repositoryStub.Setup(repo => repo.GetApprovedList(It.IsAny<int>()))
+            repositoryStub.Setup(repo => repo.GetApprovedList(It.IsAny<string>()))
             .Returns(new List<EventUser> {
-                        new EventUser() { EventId = 1, UserId = "User1" },
-                        new EventUser() { EventId = 1, UserId = "User2" }
+                        new EventUser() { EventId = eventId.ToString(), UserId = "User1" },
+                        new EventUser() { EventId = eventId.ToString(), UserId = "User2" }
                         });
             var controller = new EventsController(repositoryStub.Object, _mapper)
             {
@@ -309,7 +306,7 @@ namespace EventService.UnitTests
             controller.ControllerContext.HttpContext = new DefaultHttpContext { User = currentUser };
 
             // Act
-            var actionResult = controller.GetApprovedList(1);
+            var actionResult = controller.GetApprovedList(eventId.ToString());
 
             // Assert
             var result = actionResult.Result as OkObjectResult;

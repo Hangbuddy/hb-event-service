@@ -5,7 +5,7 @@ namespace EventService.Dtos
     public class EventUserUpdateDto
     {
         [Required]
-        public int EventId { get; set; }
+        public string EventId { get; set; }
         [Required]
         public string UserId { get; set; }
         [Required]

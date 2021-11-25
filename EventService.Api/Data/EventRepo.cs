@@ -19,9 +19,9 @@ namespace EventService.Data
             return (_context.SaveChanges() >= 0);
         }
 
-        public Event GetEvent(int eventId)
+        public Event GetEvent(string eventId)
         {
-            return _context.Events.FirstOrDefault(p => p.Id == eventId);
+            return _context.Events.FirstOrDefault(p => p.Id == new Guid(eventId));
         }
 
         public void CreateEvent(Event _event)
@@ -54,12 +54,12 @@ namespace EventService.Data
             _context.EventUsers.Remove(eventUser);
         }
 
-        public List<EventUser> GetWaitingList(int eventId)
+        public List<EventUser> GetWaitingList(string eventId)
         {
             return _context.EventUsers.Where(e => e.EventId == eventId && !e.Approved).ToList();
         }
 
-        public List<EventUser> GetApprovedList(int eventId)
+        public List<EventUser> GetApprovedList(string eventId)
         {
             return _context.EventUsers.Where(e => e.EventId == eventId && e.Approved).ToList();
         }

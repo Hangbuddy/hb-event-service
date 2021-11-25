@@ -26,7 +26,7 @@ namespace EventService.Controllers
         }
 
         [HttpGet("{userId}", Name = "GetEvent")]
-        public ActionResult<EventReadDto> GetEvent(int eventId)
+        public ActionResult<EventReadDto> GetEvent(string eventId)
         {
             var eventItem = _repository.GetEvent(eventId);
             if (eventItem != null)
@@ -64,7 +64,7 @@ namespace EventService.Controllers
         }
 
         [HttpPost("{eventId}/register")]
-        public ActionResult RegisterToEvent(int eventId)
+        public ActionResult RegisterToEvent(string eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
             var eventUserDto = new EventUserDto() { EventId = eventId, UserId = userId };
@@ -75,7 +75,7 @@ namespace EventService.Controllers
         }
 
         [HttpPost("{eventId}/deregister")]
-        public ActionResult DeRegisterFromEvent(int eventId)
+        public ActionResult DeRegisterFromEvent(string eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
             var eventUserDto = new EventUserDto() { EventId = eventId, UserId = userId };
@@ -86,7 +86,7 @@ namespace EventService.Controllers
         }
 
         [HttpGet("{eventId}/waiting-list", Name = "GetWaitingList")]
-        public ActionResult<List<EventUserReadDto>> GetWaitingList(int eventId)
+        public ActionResult<List<EventUserReadDto>> GetWaitingList(string eventId)
         {
             var eventUsers = _repository.GetWaitingList(eventId);
             if (eventUsers != null && eventUsers.Count > 0)
@@ -97,7 +97,7 @@ namespace EventService.Controllers
         }
 
         [HttpGet("{eventId}/approved-list", Name = "GetApprovedList")]
-        public ActionResult<List<EventUserReadDto>> GetApprovedList(int eventId)
+        public ActionResult<List<EventUserReadDto>> GetApprovedList(string eventId)
         {
             var eventUsers = _repository.GetApprovedList(eventId);
             if (eventUsers != null && eventUsers.Count > 0)

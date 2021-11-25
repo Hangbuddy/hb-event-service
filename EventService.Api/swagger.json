@@ -16,8 +16,8 @@
             "name": "eventId",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             }
           },
           {
@@ -158,8 +158,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             }
           }
         ],
@@ -181,8 +181,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             }
           }
         ],
@@ -205,8 +205,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             }
           }
         ],
@@ -255,8 +255,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             }
           }
         ],
@@ -396,8 +396,8 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string",
+            "nullable": true
           },
           "ownerId": {
             "type": "string",
@@ -475,8 +475,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           "ownerId": {
             "type": "string"
@@ -525,8 +524,7 @@
         "type": "object",
         "properties": {
           "eventId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           "userId": {
             "type": "string"
