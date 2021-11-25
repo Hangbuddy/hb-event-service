@@ -5,9 +5,11 @@
     "version": "v1"
   },
   "paths": {
-    "/api/Events/get-event": {
+    "/api/Events/{userId}": {
       "get": {
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "operationId": "GetEvent",
         "parameters": [
           {
@@ -17,6 +19,14 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -43,9 +53,11 @@
         }
       }
     },
-    "/api/Events/create-event": {
+    "/api/Events": {
       "post": {
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -87,11 +99,11 @@
             }
           }
         }
-      }
-    },
-    "/api/Events/update-event": {
-      "post": {
-        "tags": ["Events"],
+      },
+      "put": {
+        "tags": [
+          "Events"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -135,106 +147,63 @@
         }
       }
     },
-    "/api/Events/register-to-event": {
+    "/api/Events/{eventId}/register": {
       "post": {
-        "tags": ["Events"],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EventUserDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EventUserDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/EventUserDto"
-              }
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
     },
-    "/api/Events/deregister-from-event": {
+    "/api/Events/{eventId}/deregister": {
       "post": {
-        "tags": ["Events"],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EventUserDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EventUserDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/EventUserDto"
-              }
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
     },
-    "/api/Events/get-waiting-list": {
+    "/api/Events/{eventId}/waiting-list": {
       "get": {
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "operationId": "GetWaitingList",
         "parameters": [
           {
             "name": "eventId",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -274,14 +243,17 @@
         }
       }
     },
-    "/api/Events/get-approved-list": {
+    "/api/Events/{eventId}/approved-list": {
       "get": {
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "operationId": "GetApprovedList",
         "parameters": [
           {
             "name": "eventId",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -323,7 +295,9 @@
     },
     "/api/Events/update-event-user": {
       "post": {
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -345,31 +319,16 @@
         },
         "responses": {
           "200": {
-            "description": "Success",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EventReadDto"
-                }
-              }
-            }
+            "description": "Success"
           }
         }
       }
     },
-    "/api/Events/get-nearby-events": {
+    "/api/Events/nearby-events": {
       "get": {
-        "tags": ["Events"],
+        "tags": [
+          "Events"
+        ],
         "operationId": "GetNearbyEvents",
         "parameters": [
           {
@@ -478,7 +437,10 @@
         "additionalProperties": false
       },
       "EventCreateDto": {
-        "required": ["ownerId", "title"],
+        "required": [
+          "ownerId",
+          "title"
+        ],
         "type": "object",
         "properties": {
           "ownerId": {
@@ -506,7 +468,10 @@
         "additionalProperties": false
       },
       "EventUpdateDto": {
-        "required": ["id", "ownerId"],
+        "required": [
+          "id",
+          "ownerId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -541,20 +506,6 @@
         },
         "additionalProperties": false
       },
-      "EventUserDto": {
-        "required": ["eventId", "userId"],
-        "type": "object",
-        "properties": {
-          "eventId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "userId": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
       "EventUserReadDto": {
         "type": "object",
         "properties": {
@@ -566,7 +517,11 @@
         "additionalProperties": false
       },
       "EventUserUpdateDto": {
-        "required": ["approved", "eventId", "userId"],
+        "required": [
+          "approved",
+          "eventId",
+          "userId"
+        ],
         "type": "object",
         "properties": {
           "eventId": {
