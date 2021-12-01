@@ -74,10 +74,10 @@ namespace EventService.Data
             else
                 _context.EventUsers.Update(eventUser);
         }
-        public List<Event> GetNearbyEvents(double lattidute, double longtidute, double range)
+        public List<Event> GetNearbyEvents(double latitude, double longitude, double range)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            var location = geometryFactory.CreatePoint(new Coordinate(longtidute, lattidute));
+            var location = geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
 
             return _context.Events.Where(e => e.Location.Distance(location) < range).ToList();
         }

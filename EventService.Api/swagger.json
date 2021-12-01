@@ -5,7 +5,7 @@
     "version": "v1"
   },
   "paths": {
-    "/api/Events/{userId}": {
+    "/api/Events/{eventId}": {
       "get": {
         "tags": [
           "Events"
@@ -14,18 +14,11 @@
         "parameters": [
           {
             "name": "eventId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            }
-          },
-          {
-            "name": "userId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "nullable": true
             }
           }
         ],
@@ -332,7 +325,7 @@
         "operationId": "GetNearbyEvents",
         "parameters": [
           {
-            "name": "lattidute",
+            "name": "latitude",
             "in": "query",
             "schema": {
               "type": "number",
@@ -340,7 +333,7 @@
             }
           },
           {
-            "name": "longtidute",
+            "name": "longitude",
             "in": "query",
             "schema": {
               "type": "number",
@@ -438,23 +431,14 @@
       },
       "EventCreateDto": {
         "required": [
-          "ownerId",
+          "latitude",
+          "longitude",
           "title"
         ],
         "type": "object",
         "properties": {
-          "ownerId": {
-            "type": "string"
-          },
           "title": {
             "type": "string"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "permissionRequired": {
-            "type": "boolean"
           },
           "latitude": {
             "type": "number",
@@ -463,21 +447,24 @@
           "longitude": {
             "type": "number",
             "format": "double"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "permissionRequired": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
       },
       "EventUpdateDto": {
         "required": [
-          "id",
-          "ownerId"
+          "id"
         ],
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
-          },
-          "ownerId": {
             "type": "string"
           },
           "title": {

@@ -25,7 +25,7 @@ namespace EventService.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{userId}", Name = "GetEvent")]
+        [HttpGet("{eventId}", Name = "GetEvent")]
         public ActionResult<EventReadDto> GetEvent(string eventId)
         {
             var eventItem = _repository.GetEvent(eventId);
@@ -39,28 +39,24 @@ namespace EventService.Controllers
         [HttpPost]
         public ActionResult<EventReadDto> CreateEvent(EventCreateDto eventCreateDto)
         {
-            var userId = User.FindFirst("Id")?.Value;
-            if (userId != eventCreateDto.OwnerId)
-                return Unauthorized();
             var eventModel = _mapper.Map<Event>(eventCreateDto);
+            eventModel.OwnerId = User.FindFirst("Id")?.Value;
             _repository.CreateEvent(eventModel);
             _repository.SaveChanges();
 
             var eventReadDto = _mapper.Map<EventReadDto>(eventModel);
 
-            return CreatedAtRoute(nameof(GetEvent), new { id = eventReadDto.Id }, eventReadDto);
+            return CreatedAtRoute(nameof(GetEvent), new { eventId = eventReadDto.Id }, eventReadDto);
         }
 
         [HttpPut]
         public ActionResult<EventReadDto> UpdateEvent(EventUpdateDto eventUpdateDto)
         {
-            var userId = User.FindFirst("Id")?.Value;
-            if (userId != eventUpdateDto.OwnerId)
-                return Unauthorized();
             var eventModel = _mapper.Map<Event>(eventUpdateDto);
+            eventModel.OwnerId = User.FindFirst("Id")?.Value;
             _repository.UpdateEvent(eventModel);
             _repository.SaveChanges();
-            return CreatedAtRoute(nameof(GetEvent), new { id = eventUpdateDto.Id }, eventUpdateDto);
+            return CreatedAtRoute(nameof(GetEvent), new { eventId = eventUpdateDto.Id }, eventUpdateDto);
         }
 
         [HttpPost("{eventId}/register")]
@@ -117,9 +113,9 @@ namespace EventService.Controllers
         }
 
         [HttpGet("nearby-events", Name = "GetNearbyEvents")]
-        public ActionResult<List<EventReadDto>> GetNearbyEvents(double lattidute, double longtidute, double range)
+        public ActionResult<List<EventReadDto>> GetNearbyEvents(double latitude, double longitude, double range)
         {
-            var events = _repository.GetNearbyEvents(lattidute, longtidute, range);
+            var events = _repository.GetNearbyEvents(latitude, longitude, range);
             if (events != null && events.Count > 0)
             {
                 return Ok(_mapper.Map<List<EventReadDto>>(events));
