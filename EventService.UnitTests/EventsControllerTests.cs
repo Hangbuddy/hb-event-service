@@ -27,7 +27,6 @@ namespace EventService.UnitTests
         private readonly IMapper _mapper = new Mapper(configuration);
         private static readonly GeometryFactory geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         private readonly ClaimsPrincipal currentUser = new(new ClaimsIdentity(new Claim[] { new Claim("Id", "OwnerId") }));
-        private readonly ClaimsPrincipal anotherUser = new(new ClaimsIdentity(new Claim[] { new Claim("Id", "UnauthorizedUserId") }));
         private readonly Event _event = new()
         {
             Id = eventId,
@@ -54,7 +53,6 @@ namespace EventService.UnitTests
         };
         private readonly EventCreateDto _eventCreateDto = new()
         {
-            OwnerId = "OwnerId",
             Title = "Title",
             Description = "Description",
             PermissionRequired = false,
@@ -64,7 +62,6 @@ namespace EventService.UnitTests
         private readonly EventUpdateDto _eventUpdateDto = new()
         {
             Id = eventId.ToString(),
-            OwnerId = "OwnerId",
             Title = "UpdatedTitle",
             Description = "UpdatedDescription",
             PermissionRequired = false,
@@ -83,7 +80,6 @@ namespace EventService.UnitTests
             UserId = "User1",
             Approved = true
         };
-
         private readonly List<EventReadDto> _eventReadDtoList = new()
         {
             new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "Title", Description = "Description", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
@@ -131,23 +127,6 @@ namespace EventService.UnitTests
         }
 
         [Fact]
-        public void CreateEvent_WithAnotherUser_ReturnsUnauthorized()
-        {
-            // Arrange
-            var controller = new EventsController(repositoryStub.Object, _mapper)
-            {
-                ControllerContext = new ControllerContext()
-            };
-            controller.ControllerContext.HttpContext = new DefaultHttpContext { User = anotherUser };
-
-            // Act
-            var result = controller.CreateEvent(_eventCreateDto);
-
-            // Assert
-            result.Result.Should().BeOfType<UnauthorizedResult>();
-        }
-
-        [Fact]
         public void CreateEvent_WithCurrentUser_ReturnsEvent()
         {
             // Arrange
@@ -179,23 +158,6 @@ namespace EventService.UnitTests
         }
 
         [Fact]
-        public void UpdateEvent_WithAnotherUser_ReturnsUnauthorized()
-        {
-            // Arrange
-            var controller = new EventsController(repositoryStub.Object, _mapper)
-            {
-                ControllerContext = new ControllerContext()
-            };
-            controller.ControllerContext.HttpContext = new DefaultHttpContext { User = anotherUser };
-
-            // Act
-            var result = controller.UpdateEvent(_eventUpdateDto);
-
-            // Assert
-            result.Result.Should().BeOfType<UnauthorizedResult>();
-        }
-
-        [Fact]
         public void UpdateEvent_WithCurrentUser_ReturnsEvent()
         {
             // Arrange
@@ -221,6 +183,7 @@ namespace EventService.UnitTests
                         .Excluding(su => su.CreatedAt)
                         .Excluding(su => su.UpdatedAt)
                         .Excluding(su => su.Location)
+                        .Excluding(su => su.OwnerId)
                         );
 
             var point = geometryFactory.CreatePoint(new Coordinate(((EventUpdateDto)result.Value).Longitude, ((EventUpdateDto)result.Value).Latitude));
