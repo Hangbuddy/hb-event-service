@@ -74,12 +74,25 @@ namespace EventService.Data
             else
                 _context.EventUsers.Update(eventUser);
         }
-        public List<Event> GetNearbyEvents(double latitude, double longitude, double range)
+        public List<Event> GetNearbyEvents(UserLocation userLocation, double range)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            var location = geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
+            var location = geometryFactory.CreatePoint(new Coordinate(userLocation.Longitude, userLocation.Latitude));
 
             return _context.Events.Where(e => e.Location.Distance(location) < range).ToList();
+        }
+
+        public List<Event> GetEventsInArea(Area area)
+        {
+            Coordinate northEastCoordinate = new(area.NorthEastLocation.Longitude, area.NorthEastLocation.Latitude);
+            Coordinate southWestCoordinate = new(area.SouthWestLocation.Longitude, area.SouthWestLocation.Latitude);
+            Coordinate northWestCoordinate = new(area.SouthWestLocation.Longitude, area.NorthEastLocation.Latitude);
+            Coordinate southEastCoordinate = new(area.NorthEastLocation.Longitude, area.SouthWestLocation.Latitude);
+
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var coordinatesArray = new Coordinate[] { northEastCoordinate, northWestCoordinate, southWestCoordinate, southEastCoordinate, northEastCoordinate };
+            var polygon = geometryFactory.CreatePolygon(coordinatesArray);
+            return _context.Events.Where(e => polygon.Contains(e.Location)).ToList();
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using AutoMapper;
-using EventService.Dtos;
+using EventService.Dtos.Requests;
+using EventService.Dtos.Responses;
 using EventService.Models;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
@@ -28,12 +29,11 @@ namespace EventService.Profiles
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Location, opt =>
                 opt.MapFrom(src => geometryFactory.CreatePoint(new Coordinate(src.Longitude, src.Latitude))));
-            CreateMap<EventUserDto, EventUser>();
-            CreateMap<EventUser, EventUserDto>();
-            CreateMap<EventUserReadDto, EventUser>();
-            CreateMap<EventUser, EventUserReadDto>();
             CreateMap<EventUserUpdateDto, EventUser>();
             CreateMap<EventUser, EventUserUpdateDto>();
+            CreateMap<EventUser, EventUserReadDto>();
+            CreateMap<UserLocationDto, UserLocation>();
+            CreateMap<AreaDto, Area>();
         }
     }
 }

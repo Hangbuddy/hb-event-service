@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using EventService.Dtos.Enums;
 using NetTopologySuite.Geometries;
 
 namespace EventService.Models
@@ -13,6 +14,8 @@ namespace EventService.Models
         public string OwnerId { get; set; }
         [Required]
         public string Title { get; set; }
+        [Required]
+        public EventType EventType { get; set; }
         public string Description { get; set; }
         public bool PermissionRequired { get; set; }
         public bool IsActive { get; set; }

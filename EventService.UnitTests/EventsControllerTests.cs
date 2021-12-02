@@ -5,6 +5,9 @@ using AutoMapper;
 using EventService.Controllers;
 using EventService.Data;
 using EventService.Dtos;
+using EventService.Dtos.Enums;
+using EventService.Dtos.Requests;
+using EventService.Dtos.Responses;
 using EventService.Models;
 using EventService.Profiles;
 using FluentAssertions;
@@ -32,6 +35,7 @@ namespace EventService.UnitTests
             Id = eventId,
             OwnerId = "OwnerId",
             Title = "Title",
+            EventType = EventType.Other,
             Description = "Description",
             PermissionRequired = false,
             IsActive = true,
@@ -44,6 +48,7 @@ namespace EventService.UnitTests
             Id = eventId,
             OwnerId = "OwnerId",
             Title = "UpdatedTitle",
+            EventType = EventType.Other,
             Description = "UpdatedDescription",
             PermissionRequired = false,
             IsActive = true,
@@ -54,8 +59,8 @@ namespace EventService.UnitTests
         private readonly EventCreateDto _eventCreateDto = new()
         {
             Title = "Title",
+            EventType = EventType.Other,
             Description = "Description",
-            PermissionRequired = false,
             Latitude = 10,
             Longitude = 15
         };
@@ -63,8 +68,8 @@ namespace EventService.UnitTests
         {
             Id = eventId.ToString(),
             Title = "UpdatedTitle",
+            EventType = EventType.Other,
             Description = "UpdatedDescription",
-            PermissionRequired = false,
             IsActive = true,
             Latitude = 10,
             Longitude = 15
@@ -82,8 +87,8 @@ namespace EventService.UnitTests
         };
         private readonly List<EventReadDto> _eventReadDtoList = new()
         {
-            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "Title", Description = "Description", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
-            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "UpdatedTitle", Description = "UpdatedDescription", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
+            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "Title", EventType = EventType.Other, Description = "Description", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
+            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "UpdatedTitle", EventType = EventType.Other, Description = "UpdatedDescription", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
         };
 
         [Fact]
@@ -303,7 +308,7 @@ namespace EventService.UnitTests
         public void GetNearbyEvents_WithExistingEvents_ReturnsExpectedList()
         {
             // Arrange
-            repositoryStub.Setup(repo => repo.GetNearbyEvents(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<double>()))
+            repositoryStub.Setup(repo => repo.GetNearbyEvents(It.IsAny<UserLocation>(), It.IsAny<double>()))
             .Returns(new List<Event>(){
                 _event,
                 _updatedEvent
@@ -311,7 +316,7 @@ namespace EventService.UnitTests
             var controller = new EventsController(repositoryStub.Object, _mapper);
 
             // Act
-            var actionResult = controller.GetNearbyEvents(1, 2, 3);
+            var actionResult = controller.GetNearbyEvents(new UserLocationDto { Latitude = 1, Longitude = 1 }, 3);
 
             // Assert
             var result = actionResult.Result as OkObjectResult;

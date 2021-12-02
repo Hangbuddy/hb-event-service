@@ -1,13 +1,14 @@
 using System;
-using NetTopologySuite.Geometries;
+using EventService.Dtos.Enums;
 
-namespace EventService.Dtos
+namespace EventService.Dtos.Responses
 {
     public class EventReadDto
     {
         public string Id { get; set; }
         public string OwnerId { get; set; }
         public string Title { get; set; }
+        public EventType EventType { get; set; }
         public string Description { get; set; }
         public bool PermissionRequired { get; set; }
         public bool IsActive { get; set; }

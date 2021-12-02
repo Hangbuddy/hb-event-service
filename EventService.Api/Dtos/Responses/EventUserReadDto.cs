@@ -1,4 +1,4 @@
-namespace EventService.Dtos
+namespace EventService.Dtos.Responses
 {
     public class EventUserReadDto
     {

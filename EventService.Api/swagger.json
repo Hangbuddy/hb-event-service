@@ -51,6 +51,7 @@
         "tags": [
           "Events"
         ],
+        "operationId": "CreateEvent",
         "requestBody": {
           "content": {
             "application/json": {
@@ -97,6 +98,7 @@
         "tags": [
           "Events"
         ],
+        "operationId": "UpdateEvent",
         "requestBody": {
           "content": {
             "application/json": {
@@ -141,10 +143,11 @@
       }
     },
     "/api/Events/{eventId}/register": {
-      "post": {
+      "put": {
         "tags": [
           "Events"
         ],
+        "operationId": "Register",
         "parameters": [
           {
             "name": "eventId",
@@ -164,10 +167,11 @@
       }
     },
     "/api/Events/{eventId}/deregister": {
-      "post": {
+      "put": {
         "tags": [
           "Events"
         ],
+        "operationId": "Deregister",
         "parameters": [
           {
             "name": "eventId",
@@ -318,28 +322,12 @@
       }
     },
     "/api/Events/nearby-events": {
-      "get": {
+      "post": {
         "tags": [
           "Events"
         ],
         "operationId": "GetNearbyEvents",
         "parameters": [
-          {
-            "name": "latitude",
-            "in": "query",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
-          {
-            "name": "longitude",
-            "in": "query",
-            "schema": {
-              "type": "number",
-              "format": "double"
-            }
-          },
           {
             "name": "range",
             "in": "query",
@@ -349,6 +337,83 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLocationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLocationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventReadDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventReadDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventReadDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Events/events-in-area": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "GetEventsInArea",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AreaDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success",
@@ -385,6 +450,21 @@
   },
   "components": {
     "schemas": {
+      "EventType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "EventReadDto": {
         "type": "object",
         "properties": {
@@ -399,6 +479,9 @@
           "title": {
             "type": "string",
             "nullable": true
+          },
+          "eventType": {
+            "$ref": "#/components/schemas/EventType"
           },
           "description": {
             "type": "string",
@@ -431,6 +514,7 @@
       },
       "EventCreateDto": {
         "required": [
+          "eventType",
           "latitude",
           "longitude",
           "title"
@@ -439,6 +523,9 @@
         "properties": {
           "title": {
             "type": "string"
+          },
+          "eventType": {
+            "$ref": "#/components/schemas/EventType"
           },
           "latitude": {
             "type": "number",
@@ -451,9 +538,6 @@
           "description": {
             "type": "string",
             "nullable": true
-          },
-          "permissionRequired": {
-            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -470,6 +554,9 @@
           "title": {
             "type": "string",
             "nullable": true
+          },
+          "eventType": {
+            "$ref": "#/components/schemas/EventType"
           },
           "description": {
             "type": "string",
@@ -518,6 +605,40 @@
           },
           "approved": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserLocationDto": {
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AreaDto": {
+        "required": [
+          "northEastLocation",
+          "southWestLocation"
+        ],
+        "type": "object",
+        "properties": {
+          "northEastLocation": {
+            "$ref": "#/components/schemas/UserLocationDto"
+          },
+          "southWestLocation": {
+            "$ref": "#/components/schemas/UserLocationDto"
           }
         },
         "additionalProperties": false

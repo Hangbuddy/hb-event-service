@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using EventService.Data;
-using EventService.Dtos;
+using EventService.Dtos.Requests;
+using EventService.Dtos.Responses;
 using EventService.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,7 +37,7 @@ namespace EventService.Controllers
             return NotFound();
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateEvent")]
         public ActionResult<EventReadDto> CreateEvent(EventCreateDto eventCreateDto)
         {
             var eventModel = _mapper.Map<Event>(eventCreateDto);
@@ -49,7 +50,7 @@ namespace EventService.Controllers
             return CreatedAtRoute(nameof(GetEvent), new { eventId = eventReadDto.Id }, eventReadDto);
         }
 
-        [HttpPut]
+        [HttpPut(Name = "UpdateEvent")]
         public ActionResult<EventReadDto> UpdateEvent(EventUpdateDto eventUpdateDto)
         {
             var eventModel = _mapper.Map<Event>(eventUpdateDto);
@@ -59,24 +60,22 @@ namespace EventService.Controllers
             return CreatedAtRoute(nameof(GetEvent), new { eventId = eventUpdateDto.Id }, eventUpdateDto);
         }
 
-        [HttpPost("{eventId}/register")]
+        [HttpPut("{eventId}/register", Name = "Register")]
         public ActionResult RegisterToEvent(string eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
-            var eventUserDto = new EventUserDto() { EventId = eventId, UserId = userId };
-            var eventUserModel = _mapper.Map<EventUser>(eventUserDto);
-            _repository.RegisterToEvent(eventUserModel);
+            var eventUser = new EventUser() { EventId = eventId, UserId = userId, Approved = false };
+            _repository.RegisterToEvent(eventUser);
             _repository.SaveChanges();
             return Ok();
         }
 
-        [HttpPost("{eventId}/deregister")]
+        [HttpPut("{eventId}/deregister", Name = "Deregister")]
         public ActionResult DeRegisterFromEvent(string eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
-            var eventUserDto = new EventUserDto() { EventId = eventId, UserId = userId };
-            var eventUserModel = _mapper.Map<EventUser>(eventUserDto);
-            _repository.DeRegisterFromEvent(eventUserModel);
+            var eventUser = new EventUser() { EventId = eventId, UserId = userId, Approved = false };
+            _repository.DeRegisterFromEvent(eventUser);
             _repository.SaveChanges();
             return Ok();
         }
@@ -106,21 +105,24 @@ namespace EventService.Controllers
         [HttpPost("update-event-user")]
         public ActionResult UpdateEventUser(EventUserUpdateDto eventUserUpdateDto)
         {
-            var eventUserModel = _mapper.Map<EventUser>(eventUserUpdateDto);
-            _repository.UpdateEventUser(eventUserModel);
+            _repository.UpdateEventUser(_mapper.Map<EventUser>(eventUserUpdateDto));
             _repository.SaveChanges();
             return Ok();
         }
 
-        [HttpGet("nearby-events", Name = "GetNearbyEvents")]
-        public ActionResult<List<EventReadDto>> GetNearbyEvents(double latitude, double longitude, double range)
+        [HttpPost("nearby-events", Name = "GetNearbyEvents")]
+        public ActionResult<List<EventReadDto>> GetNearbyEvents(UserLocationDto userLocationDto, double range)
         {
-            var events = _repository.GetNearbyEvents(latitude, longitude, range);
-            if (events != null && events.Count > 0)
-            {
-                return Ok(_mapper.Map<List<EventReadDto>>(events));
-            }
-            return NotFound();
+            var events = _repository.GetNearbyEvents(_mapper.Map<UserLocation>(userLocationDto), range);
+            return Ok(_mapper.Map<List<EventReadDto>>(events));
         }
+
+        [HttpPost("events-in-area", Name = "GetEventsInArea")]
+        public ActionResult<List<EventReadDto>> GetEventsInArea(AreaDto areaDto)
+        {
+            var events = _repository.GetEventsInArea(_mapper.Map<Area>(areaDto));
+            return Ok(_mapper.Map<List<EventReadDto>>(events));
+        }
+
     }
 }
