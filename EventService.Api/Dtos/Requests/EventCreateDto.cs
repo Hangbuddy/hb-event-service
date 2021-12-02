@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using EventService.Dtos.Enums;
 
@@ -14,6 +15,8 @@ namespace EventService.Dtos.Requests
         [Required]
         public double Longitude { get; set; }
         public string Description { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
 
     }
 }

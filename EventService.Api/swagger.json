@@ -487,9 +487,6 @@
             "type": "string",
             "nullable": true
           },
-          "permissionRequired": {
-            "type": "boolean"
-          },
           "isActive": {
             "type": "boolean"
           },
@@ -500,6 +497,14 @@
           "longitude": {
             "type": "number",
             "format": "double"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
           },
           "createdAt": {
             "type": "string",
@@ -538,6 +543,14 @@
           "description": {
             "type": "string",
             "nullable": true
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -562,9 +575,6 @@
             "type": "string",
             "nullable": true
           },
-          "permissionRequired": {
-            "type": "boolean"
-          },
           "isActive": {
             "type": "boolean"
           },
@@ -575,6 +585,14 @@
           "longitude": {
             "type": "number",
             "format": "double"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false

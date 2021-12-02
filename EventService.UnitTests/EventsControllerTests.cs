@@ -37,9 +37,10 @@ namespace EventService.UnitTests
             Title = "Title",
             EventType = EventType.Other,
             Description = "Description",
-            PermissionRequired = false,
             IsActive = true,
             Location = geometryFactory.CreatePoint(new Coordinate(15, 10)),
+            StartTime = DateTime.Parse("2021-12-07"),
+            EndTime = DateTime.Parse("2021-12-07"),
             CreatedAt = DateTime.Parse("2021-11-12"),
             UpdatedAt = DateTime.Parse("2021-11-12")
         };
@@ -50,9 +51,10 @@ namespace EventService.UnitTests
             Title = "UpdatedTitle",
             EventType = EventType.Other,
             Description = "UpdatedDescription",
-            PermissionRequired = false,
             IsActive = true,
             Location = geometryFactory.CreatePoint(new Coordinate(15, 10)),
+            StartTime = DateTime.Parse("2021-12-07"),
+            EndTime = DateTime.Parse("2021-12-07"),
             CreatedAt = DateTime.Parse("2021-11-12"),
             UpdatedAt = DateTime.Parse("2021-11-12")
         };
@@ -62,7 +64,9 @@ namespace EventService.UnitTests
             EventType = EventType.Other,
             Description = "Description",
             Latitude = 10,
-            Longitude = 15
+            Longitude = 15,
+            StartTime = DateTime.Parse("2021-12-07"),
+            EndTime = DateTime.Parse("2021-12-07")
         };
         private readonly EventUpdateDto _eventUpdateDto = new()
         {
@@ -72,7 +76,9 @@ namespace EventService.UnitTests
             Description = "UpdatedDescription",
             IsActive = true,
             Latitude = 10,
-            Longitude = 15
+            Longitude = 15,
+            StartTime = DateTime.Parse("2021-12-07"),
+            EndTime = DateTime.Parse("2021-12-07")
         };
         private readonly List<EventUserReadDto> _eventUserReadDtoList = new()
         {
@@ -87,8 +93,36 @@ namespace EventService.UnitTests
         };
         private readonly List<EventReadDto> _eventReadDtoList = new()
         {
-            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "Title", EventType = EventType.Other, Description = "Description", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
-            new EventReadDto() { Id = eventId.ToString(), OwnerId = "OwnerId", Title = "UpdatedTitle", EventType = EventType.Other, Description = "UpdatedDescription", PermissionRequired = false, IsActive = true, Latitude = 10, Longitude = 15, CreatedAt = DateTime.Parse("2021-11-12"), UpdatedAt = DateTime.Parse("2021-11-12") },
+            new EventReadDto()
+            {
+                Id = eventId.ToString(),
+                OwnerId = "OwnerId",
+                Title = "Title",
+                EventType = EventType.Other,
+                Description = "Description",
+                IsActive = true,
+                Latitude = 10,
+                Longitude = 15,
+                StartTime = DateTime.Parse("2021-12-07"),
+                EndTime = DateTime.Parse("2021-12-07"),
+                CreatedAt = DateTime.Parse("2021-11-12"),
+                UpdatedAt = DateTime.Parse("2021-11-12")
+            },
+            new EventReadDto()
+            {
+                Id = eventId.ToString(),
+                OwnerId = "OwnerId",
+                Title = "UpdatedTitle",
+                EventType = EventType.Other,
+                Description = "UpdatedDescription",
+                IsActive = true,
+                Latitude = 10,
+                Longitude = 15,
+                StartTime = DateTime.Parse("2021-12-07"),
+                EndTime = DateTime.Parse("2021-12-07"),
+                CreatedAt = DateTime.Parse("2021-11-12"),
+                UpdatedAt = DateTime.Parse("2021-11-12")
+            },
         };
 
         [Fact]
@@ -317,6 +351,32 @@ namespace EventService.UnitTests
 
             // Act
             var actionResult = controller.GetNearbyEvents(new UserLocationDto { Latitude = 1, Longitude = 1 }, 3);
+
+            // Assert
+            var result = actionResult.Result as OkObjectResult;
+            result.Should().NotBeNull();
+
+            result.Value.Should().BeEquivalentTo(_eventReadDtoList);
+
+        }
+
+        [Fact]
+        public void GetEventsInArea_WithExistingEvents_ReturnsExpectedList()
+        {
+            // Arrange
+            repositoryStub.Setup(repo => repo.GetEventsInArea(It.IsAny<Area>()))
+            .Returns(new List<Event>(){
+                _event,
+                _updatedEvent
+            });
+            var controller = new EventsController(repositoryStub.Object, _mapper);
+
+            // Act
+            var actionResult = controller.GetEventsInArea(new AreaDto
+            {
+                NorthEastLocation = new UserLocationDto { Latitude = 1, Longitude = 1 },
+                SouthWestLocation = new UserLocationDto { Latitude = 2, Longitude = 2 }
+            });
 
             // Assert
             var result = actionResult.Result as OkObjectResult;

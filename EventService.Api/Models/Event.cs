@@ -17,9 +17,10 @@ namespace EventService.Models
         [Required]
         public EventType EventType { get; set; }
         public string Description { get; set; }
-        public bool PermissionRequired { get; set; }
         public bool IsActive { get; set; }
         public Point Location { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

@@ -7,6 +7,7 @@ using EventService.Dtos.Responses;
 using EventService.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
 
 namespace EventService.Controllers
 {
@@ -41,6 +42,11 @@ namespace EventService.Controllers
         public ActionResult<EventReadDto> CreateEvent(EventCreateDto eventCreateDto)
         {
             var eventModel = _mapper.Map<Event>(eventCreateDto);
+            // If user didn't set a start time then it's a default 12 hour event starting from now.
+            if (eventCreateDto.StartTime == default)
+                eventModel.StartTime = DateTime.Now;
+            if (eventCreateDto.EndTime == default)
+                eventModel.EndTime = eventModel.StartTime.AddHours(12);
             eventModel.OwnerId = User.FindFirst("Id")?.Value;
             _repository.CreateEvent(eventModel);
             _repository.SaveChanges();
