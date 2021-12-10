@@ -4,15 +4,12 @@ using System.Security.Claims;
 using AutoMapper;
 using EventService.Controllers;
 using EventService.Data;
-using EventService.Dtos;
-using EventService.Dtos.Enums;
 using EventService.Dtos.Requests;
 using EventService.Dtos.Responses;
 using EventService.Models;
 using EventService.Profiles;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NetTopologySuite;
@@ -25,9 +22,12 @@ namespace EventService.UnitTests
     {
         private readonly Mock<IEventRepo> repositoryStub = new();
         private static readonly Guid eventId = Guid.NewGuid();
+        private static readonly Guid userId = Guid.NewGuid();
+        private static readonly EventUser eventUser = new() { UserId = userId.ToString() };
+        private static readonly EventUserReadDto eventUserReadDto = new() { UserId = userId.ToString() };
         private static readonly EventsProfile eventsProfile = new();
         private static readonly MapperConfiguration configuration = new(cfg => cfg.AddProfile(eventsProfile));
-        private readonly IMapper _mapper = new Mapper(configuration);
+        private static readonly IMapper _mapper = new Mapper(configuration);
         private static readonly GeometryFactory geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         private readonly ClaimsPrincipal currentUser = new(new ClaimsIdentity(new Claim[] { new Claim("Id", "OwnerId") }));
         private readonly Event _event = new()
@@ -35,7 +35,8 @@ namespace EventService.UnitTests
             Id = eventId,
             OwnerId = "OwnerId",
             Title = "Title",
-            EventType = EventType.Other,
+            EventType = _mapper.Map<EventType>(EventTypeDto.Other),
+            EventUsers = new List<EventUser>() { eventUser },
             Description = "Description",
             IsActive = true,
             Location = geometryFactory.CreatePoint(new Coordinate(15, 10)),
@@ -49,7 +50,8 @@ namespace EventService.UnitTests
             Id = eventId,
             OwnerId = "OwnerId",
             Title = "UpdatedTitle",
-            EventType = EventType.Other,
+            EventType = _mapper.Map<EventType>(EventTypeDto.Other),
+            EventUsers = new List<EventUser>() { eventUser },
             Description = "UpdatedDescription",
             IsActive = true,
             Location = geometryFactory.CreatePoint(new Coordinate(15, 10)),
@@ -61,7 +63,7 @@ namespace EventService.UnitTests
         private readonly EventCreateDto _eventCreateDto = new()
         {
             Title = "Title",
-            EventType = EventType.Other,
+            EventType = EventTypeDto.Other,
             Description = "Description",
             Latitude = 10,
             Longitude = 15,
@@ -72,7 +74,7 @@ namespace EventService.UnitTests
         {
             Id = eventId.ToString(),
             Title = "UpdatedTitle",
-            EventType = EventType.Other,
+            EventType = EventTypeDto.Other,
             Description = "UpdatedDescription",
             IsActive = true,
             Latitude = 10,
@@ -98,7 +100,8 @@ namespace EventService.UnitTests
                 Id = eventId.ToString(),
                 OwnerId = "OwnerId",
                 Title = "Title",
-                EventType = EventType.Other,
+                EventType = EventTypeDto.Other,
+                EventUsers = new List<EventUserReadDto>() { eventUserReadDto },
                 Description = "Description",
                 IsActive = true,
                 Latitude = 10,
@@ -113,7 +116,8 @@ namespace EventService.UnitTests
                 Id = eventId.ToString(),
                 OwnerId = "OwnerId",
                 Title = "UpdatedTitle",
-                EventType = EventType.Other,
+                EventType = EventTypeDto.Other,
+                EventUsers = new List<EventUserReadDto>() { eventUserReadDto },
                 Description = "UpdatedDescription",
                 IsActive = true,
                 Latitude = 10,
@@ -157,8 +161,9 @@ namespace EventService.UnitTests
 
             result.Value.Should().BeEquivalentTo(
                 _event,
-                opt => opt.Excluding(su => su.Location)
-                          .Excluding(su => su.Id));
+                opt => opt.Excluding(e => e.Location)
+                          .Excluding(e => e.Id)
+                          .Excluding(e => e.EventUsers));
 
             var point = geometryFactory.CreatePoint(new Coordinate(((EventReadDto)result.Value).Longitude, ((EventReadDto)result.Value).Latitude));
             Assert.Equal(_event.Location, point);
@@ -185,10 +190,11 @@ namespace EventService.UnitTests
             result.Should().NotBeNull();
             result.Value.Should().BeEquivalentTo(_event,
                 opt => opt
-                .Excluding(su => su.Id)
-                .Excluding(su => su.CreatedAt)
-                .Excluding(su => su.UpdatedAt)
-                .Excluding(su => su.Location)
+                .Excluding(e => e.Id)
+                .Excluding(e => e.CreatedAt)
+                .Excluding(e => e.UpdatedAt)
+                .Excluding(e => e.Location)
+                .Excluding(e => e.EventUsers)
                 );
 
 
@@ -218,12 +224,12 @@ namespace EventService.UnitTests
             var result = actionResult.Result as ObjectResult;
             result.Should().NotBeNull();
             result.Value.Should().BeEquivalentTo(_updatedEvent, opt => opt
-                .Excluding(su => su.Id)
-                        .Excluding(su => su.CreatedAt)
-                        .Excluding(su => su.UpdatedAt)
-                        .Excluding(su => su.Location)
-                        .Excluding(su => su.OwnerId)
-                        );
+                .Excluding(e => e.Id)
+                .Excluding(e => e.CreatedAt)
+                .Excluding(e => e.UpdatedAt)
+                .Excluding(e => e.Location)
+                .Excluding(e => e.OwnerId)
+                .Excluding(e => e.EventUsers));
 
             var point = geometryFactory.CreatePoint(new Coordinate(((EventUpdateDto)result.Value).Longitude, ((EventUpdateDto)result.Value).Latitude));
             Assert.Equal(_event.Location, point);
@@ -269,13 +275,32 @@ namespace EventService.UnitTests
         }
 
         [Fact]
+        public void KickUser_WithCurrentUser_ReturnsEvent()
+        {
+            // Arrange
+            repositoryStub.Setup(repo => repo.DeRegisterFromEvent(It.IsAny<EventUser>()))
+            .Verifiable();
+            var controller = new EventsController(repositoryStub.Object, _mapper)
+            {
+                ControllerContext = new ControllerContext()
+            };
+            controller.ControllerContext.HttpContext = new DefaultHttpContext { User = currentUser };
+
+            // Act
+            var actionResult = controller.KickUser(eventId.ToString(), currentUser.ToString());
+
+            // Assert
+            actionResult.Should().BeOfType<OkResult>();
+        }
+
+        [Fact]
         public void GetWaitingList_WithCurrentUser_ReturnsEventList()
         {
             // Arrange
             repositoryStub.Setup(repo => repo.GetWaitingList(It.IsAny<string>()))
             .Returns(new List<EventUser> {
-                        new EventUser() { EventId = eventId.ToString(), UserId = "User1" },
-                        new EventUser() { EventId = eventId.ToString(), UserId = "User2" }
+                        new EventUser() { Event = _event, UserId = "User1" },
+                        new EventUser() { Event = _event, UserId = "User2" }
                         });
             var controller = new EventsController(repositoryStub.Object, _mapper)
             {
@@ -298,8 +323,8 @@ namespace EventService.UnitTests
             // Arrange
             repositoryStub.Setup(repo => repo.GetApprovedList(It.IsAny<string>()))
             .Returns(new List<EventUser> {
-                        new EventUser() { EventId = eventId.ToString(), UserId = "User1" },
-                        new EventUser() { EventId = eventId.ToString(), UserId = "User2" }
+                        new EventUser() { Event = _event, UserId = "User1" },
+                        new EventUser() { Event = _event, UserId = "User2" }
                         });
             var controller = new EventsController(repositoryStub.Object, _mapper)
             {
@@ -357,7 +382,6 @@ namespace EventService.UnitTests
             result.Should().NotBeNull();
 
             result.Value.Should().BeEquivalentTo(_eventReadDtoList);
-
         }
 
         [Fact]
@@ -383,6 +407,23 @@ namespace EventService.UnitTests
             result.Should().NotBeNull();
 
             result.Value.Should().BeEquivalentTo(_eventReadDtoList);
+
+        }
+
+        [Fact]
+        public void GetEventTypes_ReturnsExpectedList()
+        {
+            // Arrange
+            var controller = new EventsController(repositoryStub.Object, _mapper);
+
+            // Act
+            var actionResult = controller.GetEventTypes();
+
+            // Assert
+            var result = actionResult.Result as OkObjectResult;
+            result.Should().NotBeNull();
+
+            result.Value.Should().BeEquivalentTo(EventTypeDto.EventTypes);
 
         }
 
