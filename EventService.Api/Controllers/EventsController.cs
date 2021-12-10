@@ -27,6 +27,13 @@ namespace EventService.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("my-events", Name = "GetMyEvents")]
+        public ActionResult<EventReadDto> GetMyEvents()
+        {
+            var userId = User.FindFirst("Id")?.Value;
+            return Ok(_mapper.Map<List<EventReadDto>>(_repository.GetMyEvents(userId)));
+        }
+
         [HttpGet("{eventId}", Name = "GetEvent")]
         public ActionResult<EventReadDto> GetEvent(string eventId)
         {
@@ -70,17 +77,29 @@ namespace EventService.Controllers
         public ActionResult RegisterToEvent(string eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
-            var eventUser = new EventUser() { EventId = eventId, UserId = userId, Approved = false };
+            var _event = _repository.GetEvent(eventId);
+            var eventUser = new EventUser() { Event = _event, UserId = userId, Approved = false };
             _repository.RegisterToEvent(eventUser);
             _repository.SaveChanges();
             return Ok();
         }
 
-        [HttpPut("{eventId}/deregister", Name = "Deregister")]
+        [HttpPut("{eventId}/deregister", Name = "DeRegister")]
         public ActionResult DeRegisterFromEvent(string eventId)
         {
             var userId = User.FindFirst("Id")?.Value;
-            var eventUser = new EventUser() { EventId = eventId, UserId = userId, Approved = false };
+            var _event = _repository.GetEvent(eventId);
+            var eventUser = new EventUser() { Event = _event, UserId = userId, Approved = false };
+            _repository.DeRegisterFromEvent(eventUser);
+            _repository.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete("{eventId}/Users/{userId}", Name = "KickUser")]
+        public ActionResult KickUser(string eventId, string userId)
+        {
+            var _event = _repository.GetEvent(eventId);
+            var eventUser = new EventUser() { Event = _event, UserId = userId, Approved = false };
             _repository.DeRegisterFromEvent(eventUser);
             _repository.SaveChanges();
             return Ok();
@@ -130,5 +149,10 @@ namespace EventService.Controllers
             return Ok(_mapper.Map<List<EventReadDto>>(events));
         }
 
+        [HttpGet("types", Name = "GetEventTypes")]
+        public ActionResult<List<EventTypeDto>> GetEventTypes()
+        {
+            return Ok(EventTypeDto.EventTypes);
+        }
     }
 }

@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using EventService.Dtos.Enums;
 using NetTopologySuite.Geometries;
 
 namespace EventService.Models
@@ -16,6 +16,7 @@ namespace EventService.Models
         public string Title { get; set; }
         [Required]
         public EventType EventType { get; set; }
+        public ICollection<EventUser> EventUsers { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public Point Location { get; set; }

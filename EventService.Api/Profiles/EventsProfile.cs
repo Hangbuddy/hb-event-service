@@ -34,6 +34,8 @@ namespace EventService.Profiles
             CreateMap<EventUser, EventUserReadDto>();
             CreateMap<UserLocationDto, UserLocation>();
             CreateMap<AreaDto, Area>();
+            CreateMap<EventTypeDto, EventType>();
+            CreateMap<EventType, EventTypeDto>();
         }
     }
 }

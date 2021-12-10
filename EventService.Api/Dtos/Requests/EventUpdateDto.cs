@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using EventService.Dtos.Enums;
+using EventService.Dtos.Responses;
 
 namespace EventService.Dtos.Requests
 {
@@ -10,7 +10,7 @@ namespace EventService.Dtos.Requests
         [Required]
         public string Id { get; set; }
         public string Title { get; set; }
-        public EventType EventType { get; set; }
+        public EventTypeDto EventType { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public double Latitude { get; set; }

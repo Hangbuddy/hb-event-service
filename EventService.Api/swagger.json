@@ -5,6 +5,36 @@
     "version": "v1"
   },
   "paths": {
+    "/api/Events/my-events": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "GetMyEvents",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventReadDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventReadDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventReadDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Events/{eventId}": {
       "get": {
         "tags": [
@@ -171,10 +201,43 @@
         "tags": [
           "Events"
         ],
-        "operationId": "Deregister",
+        "operationId": "DeRegister",
         "parameters": [
           {
             "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Events/{eventId}/Users/{userId}": {
+      "delete": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "KickUser",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          {
+            "name": "userId",
             "in": "path",
             "required": true,
             "schema": {
@@ -446,24 +509,62 @@
           }
         }
       }
+    },
+    "/api/Events/types": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "operationId": "GetEventTypes",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventTypeDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventTypeDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventTypeDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
-      "EventType": {
-        "enum": [
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9
-        ],
-        "type": "integer",
-        "format": "int32"
+      "EventTypeDto": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "EventUserReadDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "EventReadDto": {
         "type": "object",
@@ -481,7 +582,14 @@
             "nullable": true
           },
           "eventType": {
-            "$ref": "#/components/schemas/EventType"
+            "$ref": "#/components/schemas/EventTypeDto"
+          },
+          "eventUsers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventUserReadDto"
+            },
+            "nullable": true
           },
           "description": {
             "type": "string",
@@ -497,6 +605,10 @@
           "longitude": {
             "type": "number",
             "format": "double"
+          },
+          "buddiesCount": {
+            "type": "integer",
+            "format": "int32"
           },
           "startTime": {
             "type": "string",
@@ -530,7 +642,7 @@
             "type": "string"
           },
           "eventType": {
-            "$ref": "#/components/schemas/EventType"
+            "$ref": "#/components/schemas/EventTypeDto"
           },
           "latitude": {
             "type": "number",
@@ -569,7 +681,7 @@
             "nullable": true
           },
           "eventType": {
-            "$ref": "#/components/schemas/EventType"
+            "$ref": "#/components/schemas/EventTypeDto"
           },
           "description": {
             "type": "string",
@@ -593,16 +705,6 @@
           "endTime": {
             "type": "string",
             "format": "date-time"
-          }
-        },
-        "additionalProperties": false
-      },
-      "EventUserReadDto": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false

@@ -13,7 +13,12 @@ namespace EventService.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EventUser>()
-                .HasKey(nameof(EventUser.EventId), nameof(EventUser.UserId));
+                .HasKey(nameof(EventUser.Event), nameof(EventUser.UserId));
+
+            modelBuilder.Entity<Event>()
+                .HasMany(c => c.EventUsers)
+                .WithOne(e => e.Event)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<Event> Events { get; set; }

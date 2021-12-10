@@ -16,19 +16,37 @@ namespace EventService.Data
         }
         public bool SaveChanges()
         {
-            return (_context.SaveChanges() >= 0);
+            return _context.SaveChanges() >= 0;
+        }
+
+        public List<Event> GetMyEvents(string userId)
+        {
+            return _context.EventUsers
+                            .Where(eu => eu.UserId == userId && eu.Approved)
+                            .Select(eu => eu.Event).ToList();
         }
 
         public Event GetEvent(string eventId)
         {
-            return _context.Events.FirstOrDefault(p => p.Id == new Guid(eventId));
+            return _context.Events.FirstOrDefault(e => e.Id == new Guid(eventId));
         }
 
-        public void CreateEvent(Event _event)
+        public bool CreateEvent(Event _event)
         {
-            if (_event == null)
-                throw new ArgumentNullException(nameof(_event));
-            _context.Events.Add(_event);
+            var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                if (_event == null)
+                    throw new ArgumentNullException(nameof(_event));
+                _context.Events.Add(_event);
+                RegisterToEvent(new EventUser() { Event = _event, UserId = _event.OwnerId, Approved = true });
+                return true;
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                return false;
+            }
         }
 
         public void UpdateEvent(Event _event)
@@ -56,12 +74,12 @@ namespace EventService.Data
 
         public List<EventUser> GetWaitingList(string eventId)
         {
-            return _context.EventUsers.Where(e => e.EventId == eventId && !e.Approved).ToList();
+            return _context.EventUsers.Where(e => e.Event.Id.ToString() == eventId && !e.Approved).ToList();
         }
 
         public List<EventUser> GetApprovedList(string eventId)
         {
-            return _context.EventUsers.Where(e => e.EventId == eventId && e.Approved).ToList();
+            return _context.EventUsers.Where(e => e.Event.Id.ToString() == eventId && e.Approved).ToList();
         }
 
         public void UpdateEventUser(EventUser eventUser)
@@ -74,6 +92,7 @@ namespace EventService.Data
             else
                 _context.EventUsers.Update(eventUser);
         }
+
         public List<Event> GetNearbyEvents(UserLocation userLocation, double range)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -81,6 +100,7 @@ namespace EventService.Data
 
             return _context.Events.Where(e => e.Location.Distance(location) < range).ToList();
         }
+
 
         public List<Event> GetEventsInArea(Area area)
         {
